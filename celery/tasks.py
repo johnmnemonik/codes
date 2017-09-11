@@ -125,7 +125,7 @@ def _portopen(ip):
 @task(default_retry_delay=100, max_retries=2, time_limit=200)
 def checker_socks_forward(ipreal):
 	"""
-	тут прпоисходит проверка почтучного сокса
+	тут прпоисходит проверка поштучного сокса
 	"""
 	ip, port = ipreal.split(":")
 	try:
