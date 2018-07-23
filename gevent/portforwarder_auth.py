@@ -60,6 +60,18 @@ class PortForwarder(StreamServer):
             pass
 
 
+    def check_auth(self, data):
+        ULEN = data[1:2]
+        ULEN = unpack(">b",ULEN)[0]
+        User = data[2:2+ULEN]
+        PLEN = data[2+ULEN:3+ULEN]
+        PLEN = unpack(">b",PLEN)[0]
+        Pass = data[3+ULEN:3+ULEN+PLEN]
+        if User.decode() == self.user and Pass.decode() == self.passwd:
+            return True
+
+
+
     def handle(self, source, address):
         try:
             data = source.recv(1024)
@@ -83,13 +95,8 @@ class PortForwarder(StreamServer):
             return
         if not data:
             return
-        ULEN = data[1:2]
-        ULEN = unpack(">b",ULEN)[0]
-        User = data[2:2+ULEN]
-        PLEN = data[2+ULEN:3+ULEN]
-        PLEN = unpack(">b",PLEN)[0]
-        Pass = data[3+ULEN:3+ULEN+PLEN]
-        if str(User,"utf-8") == self.user and str(Pass,"utf-8") == self.passwd:
+        
+        if self.check_auth(data):
             source.sendall(b"\x05\x00")
         else:
             source.sendall(b'\x05\xff')
