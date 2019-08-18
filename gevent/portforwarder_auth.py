@@ -37,7 +37,7 @@ class PortForwarder(StreamServer):
         self.local_dns = False
         self.city = self.geo.city.decode("utf-8")
         self.country = self.geo.country_long.decode("utf-8")
-        self.red = Redis(host="217.23.2.235",password='l1984loginn')
+        self.red = Redis(host="127.0.0.1",password='l1984loginn')
         
         try:
             iplist,citylist = eval(self.red.get(self.country))

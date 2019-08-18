@@ -16,8 +16,6 @@ import timeout_decorator
 
 from daemonize import daemonize
 
-#import uvloop
-#asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 sys.path.insert(0, os.path.dirname("../" + __file__))
 sys.path.append('/home/john/proxyproject/')

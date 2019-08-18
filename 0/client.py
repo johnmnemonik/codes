@@ -33,8 +33,7 @@ def black():
     if SECURE:
         ctx = zerorpc.Context.get_instance()
         zmq_socket = client._events._socket
-
-        print("установка безопасного соединения")
+        
         # Нам нужны два сертификата, один для клиента и один для
         # сервер. Клиент должен знать открытый ключ сервера
         client_secret_file = os.path.join(secret_keys_dir, "client.key_secret")

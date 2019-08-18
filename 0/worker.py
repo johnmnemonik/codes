@@ -119,7 +119,6 @@ def run_server():
     srv = zerorpc.Server(Worker(),heartbeat=60*100)
     if SECURE:
         ctx = zerorpc.Context.get_instance()
-        #gc.context = zmq.Context()
         auth = ThreadAuthenticator(ctx)
         auth.start()
 
@@ -151,7 +150,6 @@ def run_server():
         logger.extension(exc)
 
 if __name__ == '__main__':
-    daemonize(stdout='/tmp/worker.log',stderr='/tmp/workererror.log')
     while True:
         try:
             run_server()

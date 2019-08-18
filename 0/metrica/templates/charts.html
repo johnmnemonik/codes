@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+    
+
+
+{% block base %}
+
+        <script type="text/javascript">
+            function createTimeline() {
+                //var worker_chart = new SmoothieChart({ responsive: true });
+                //var worker = new TimeSeries()
+                //var evtSource = new EventSource("/feed");
+
+                var chart_props = {
+                    responsive: true,
+                    enableDpiScaling: false,
+                    millisPerPixel:100,
+                    grid: {
+                        millisPerLine: 4000,
+                        fillStyle: '#ffffff',
+                        strokeStyle: 'rgba(0,0,0,0.08)',
+                        verticalSections: 10
+                    },
+                    labels:{fillStyle:'#000000',fontSize:18},
+                    timestampFormatter:SmoothieChart.timeFormatter,
+                    maxValue: 100,
+                    minValue: 0
+                };
+                var worker_chart = new SmoothieChart(chart_props);
+                var worker = new TimeSeries()
+                var evtSource = new EventSource("/feed");
+
+                evtSource.onmessage = function(e) {
+                    //######################
+                    // сервер
+                    //######################
+                    var obj = JSON.parse(e.data);
+                    var now = Date.now();
+                    var val = Math.random() * 10000
+                    worker.append(now, obj.cpu);
+                    //worker.append(now, obj.ram);
+                    worker_chart.addTimeSeries(worker,{ 
+                        strokeStyle: 'rgba(0, 255, 0, 1)', 
+                        fillStyle: 'rgba(94, 30, 214, 1)', 
+                        lineWidth: 1 
+                    });
+                    worker_chart.streamTo(document.getElementById("worker_chart"), 1000);
+                    document.getElementById('cpu').innerText = obj.cpu
+                    document.getElementById('established').innerText = obj.established 
+                    document.getElementById('memory').innerText = obj.mem
+                    document.getElementById('speed').innerText = obj.speed_send + "/" + obj.speed_recv
+                    document.getElementById('ram').innerText = obj.ram
+                    document.getElementById('proc').innerText = obj.proc
+                    document.getElementById('worker').innerText = obj.worker
+                    //------------------------------------------------------
+                    //                    сканеры/воркеры
+                    //------------------------------------------------------
+                    if (obj.scan_type === 'socks4')
+                    {
+                        if (obj.scan_status === 'stop') {
+                            document.querySelector('tbody > tr#socks4 > td#scan_start_next').innerText = "через " + obj.scan_start_next + " минут"
+                            document.querySelector('tbody > tr#socks4 > td#scan_end').innerText = obj.scan_end + " минут"
+                            document.querySelector('tbody > tr#socks4 > td#scan_status').style.color = "red";
+                        } else {
+                            document.querySelector('tbody > tr#socks4 > td#scan_start_next').innerText = "---"
+                            document.querySelector('tbody > tr#socks4 > td#scan_end').innerText = "---"
+                            document.querySelector('tbody > tr#socks4 > td#scan_status').style.color = "yellow";
+                        }
+                        document.querySelector('tbody > tr#socks4 > td#scan_status').innerText = obj.scan_status
+                        document.querySelector('tbody > tr#socks4 > td#scan_type').innerText = obj.scan_type
+                        document.querySelector('tbody > tr#socks4 > td#scan_name').innerText = obj.scan_name
+                        document.querySelector('tbody > tr#socks4 > td#scan_start').innerText = obj.scan_start
+                        document.querySelector('tbody > tr#socks4 > td#scan_status').innerHTML = obj.scan_status;
+                    }
+                    if (obj.scan_type === 'socks5'){
+                        if (obj.scan_status === 'stop') {
+                            document.querySelector('tbody > tr#socks5 > td#scan_start_next').innerText = "через " + obj.scan_start_next + " минут"
+                            document.querySelector('tbody > tr#socks5 > td#scan_end').innerText = obj.scan_end + " минут"
+                            document.querySelector('tbody > tr#socks5 > td#scan_status').style.color = "red";
+                        } else {
+                            document.querySelector('tbody > tr#socks5 > td#scan_start_next').innerText = "---"
+                            document.querySelector('tbody > tr#socks5 > td#scan_end').innerText = "---"
+                            document.querySelector('tbody > tr#socks5 > td#scan_status').style.color = "yellow";
+                        }
+                        document.querySelector('tbody > tr#socks5 > td#scan_status').innerText = obj.scan_status
+                        document.querySelector('tbody > tr#socks5 > td#scan_type').innerText = obj.scan_type
+                        document.querySelector('tbody > tr#socks5 > td#scan_name').innerText = obj.scan_name
+                        document.querySelector('tbody > tr#socks5 > td#scan_start').innerText = obj.scan_start
+                        document.querySelector('tbody > tr#socks5 > td#scan_status').innerHTML = obj.scan_status;
+                    }
+                    if (obj.scan_type === 'socks4bc'){
+                        if (obj.scan_status === 'stop') {
+                            document.querySelector('tbody > tr#socks4bc > td#scan_start_next').innerText = "через " + obj.scan_start_next + " минут"
+                            document.querySelector('tbody > tr#socks4bc > td#scan_end').innerText = obj.scan_end + " минут"
+                            document.querySelector('tbody > tr#socks4bc > td#scan_status').style.color = "red";
+                        } else {
+                            document.querySelector('tbody > tr#socks4bc > td#scan_start_next').innerText = "---"
+                            document.querySelector('tbody > tr#socks4bc > td#scan_end').innerText = "---"
+                            document.querySelector('tbody > tr#socks4bc > td#scan_status').style.color = "yellow";
+                        }
+                        document.querySelector('tbody > tr#socks4bc > td#scan_status').innerText = obj.scan_status
+                        document.querySelector('tbody > tr#socks4bc > td#scan_type').innerText = obj.scan_type
+                        document.querySelector('tbody > tr#socks4bc > td#scan_name').innerText = obj.scan_name
+                        document.querySelector('tbody > tr#socks4bc > td#scan_start').innerText = obj.scan_start
+                        document.querySelector('tbody > tr#socks4bc > td#scan_status').innerHTML = obj.scan_status;
+                    }
+                    if (obj.scan_type === 'socks5bc'){
+                        if (obj.scan_status === 'stop') {
+                            document.querySelector('tbody > tr#socks5bc > td#scan_start_next').innerText = "через " + obj.scan_start_next + " минут"
+                            document.querySelector('tbody > tr#socks5bc > td#scan_end').innerText = obj.scan_end + " минут"
+                            document.querySelector('tbody > tr#socks5bc > td#scan_status').style.color = "red";
+                        } else {
+                            document.querySelector('tbody > tr#socks5bc > td#scan_start_next').innerText = "---"
+                            document.querySelector('tbody > tr#socks5bc > td#scan_end').innerText = "---"
+                            document.querySelector('tbody > tr#socks5bc > td#scan_status').style.color = "yellow";
+                        }
+                        document.querySelector('tbody > tr#socks5bc > td#scan_status').innerText = obj.scan_status
+                        document.querySelector('tbody > tr#socks5bc > td#scan_type').innerText = obj.scan_type
+                        document.querySelector('tbody > tr#socks5bc > td#scan_name').innerText = obj.scan_name
+                        document.querySelector('tbody > tr#socks5bc > td#scan_start').innerText = obj.scan_start
+                        document.querySelector('tbody > tr#socks5bc > td#scan_status').innerHTML = obj.scan_status;
+                    }
+                    if (obj.scan_type === 'http'){
+                        if (obj.scan_status === 'stop') {
+                            document.querySelector('tbody > tr#http > td#scan_start_next').innerText = "через " + obj.scan_start_next + " минут"
+                            document.querySelector('tbody > tr#http > td#scan_end').innerText = obj.scan_end + " минут"
+                            document.querySelector('tbody > tr#http > td#scan_status').style.color = "red";
+                        } else {
+                            document.querySelector('tbody > tr#http > td#scan_start_next').innerText = "---"
+                            document.querySelector('tbody > tr#http > td#scan_end').innerText = "---"
+                            document.querySelector('tbody > tr#http > td#scan_status').style.color = "yellow";
+                        }
+                        document.querySelector('tbody > tr#http > td#scan_status').innerText = obj.scan_status
+                        document.querySelector('tbody > tr#http > td#scan_type').innerText = obj.scan_type
+                        document.querySelector('tbody > tr#http > td#scan_name').innerText = obj.scan_name
+                        document.querySelector('tbody > tr#http > td#scan_start').innerText = obj.scan_start
+                        document.querySelector('tbody > tr#http > td#scan_status').innerHTML = obj.scan_status;
+                    }
+                };
+            }
+        </script>
+    
+
+        <h3 id="worker"></h3>
+
+        <canvas id="worker_chart" style="width:100%; height:100px">
+        </canvas>
+
+        <table class="table table-reflow table-inverse" id="server">
+            <tbody>
+                <tr>
+                    <th scope="row">CPU</th>
+                    <td id="cpu"></td>
+                </tr>
+                <tr>
+                    <th scope="row">MEMORY</th>
+                    <td id="memory"></td>
+                </tr>
+                <tr>
+                    <th scope="row">SCRIPT</th>
+                    <td id="proc"></td>
+                </tr>
+                <tr>
+                    <th scope="row">RAM</th>
+                    <td id="ram"></td>
+                </tr>
+                <tr>
+                    <th scope="row">NEWORK I/O</th>
+                    <td id="speed"></td>
+                </tr>
+                <tr>
+                    <th scope="row">СОЕДИНЕНИЙ</th>
+                    <td id="established"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 id="socks">Сокс мониторинг</h3>
+        <table class="table table-sm table-inverse">
+        <thead>
+            <tr>
+                <th>----</th>
+                <th>статус</th>
+                <th>Тип сканирования</th>
+                <th>Скрипт</th>
+                <th>начало скана</th>
+                <th>время потраченое на скан</th>
+                <th>следующий запуск</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr id="socks4">
+                <th scope="row">1</th>
+                    <td id="scan_status"></td>
+                    <td id="scan_type"></td>
+                    <td id="scan_name"></td>
+                    <td id="scan_start"></td>
+                    <td id="scan_end"></td>
+                    <td id="scan_start_next"></td>
+            </tr>
+            <tr id="socks5">
+                <th scope="row">2</th>
+                    <td id="scan_status"></td>
+                    <td id="scan_type"></td>
+                    <td id="scan_name"></td>
+                    <td id="scan_start"></td>
+                    <td id="scan_end"></td>
+                    <td id="scan_start_next"></td>
+            </tr>
+            <tr id="socks4bc">
+                <th scope="row">3</th>
+                    <td id="scan_status"></td>
+                    <td id="scan_type"></td>
+                    <td id="scan_name"></td>
+                    <td id="scan_start"></td>
+                    <td id="scan_end"></td>
+                    <td id="scan_start_next"></td>
+            </tr>
+            <tr id="socks5bc">
+                <th scope="row">4</th>
+                    <td id="scan_status"></td>
+                    <td id="scan_type"></td>
+                    <td id="scan_name"></td>
+                    <td id="scan_start"></td>
+                    <td id="scan_end"></td>
+                    <td id="scan_start_next"></td>
+            </tr>
+            <tr id="http">
+                <th scope="row">5</th>
+                    <td id="scan_status"></td>
+                    <td id="scan_type"></td>
+                    <td id="scan_name"></td>
+                    <td id="scan_start"></td>
+                    <td id="scan_end"></td>
+                    <td id="scan_start_next"></td>
+            </tr>
+        </tbody>
+        </table>
+
+<script type="text/javascript">
+    window.onload = createTimeline()
+</script>
+{% endblock %}

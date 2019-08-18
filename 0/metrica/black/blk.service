@@ -1,0 +1,14 @@
+[Unit]
+Description=block scan daemon
+After=network.target
+
+[Service]
+User=john
+Group=john
+WorkingDirectory=/home/john/proxyproject/black
+ExecStart=/home/john/.v3/bin/python blocklist.py
+LimitNOFILE=500000
+LimitNPROC=500000
+
+[Install]
+WantedBy=multi-user.target

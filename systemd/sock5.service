@@ -1,0 +1,14 @@
+[Unit]
+Description=sock5 daemon
+After=network.target
+
+[Service]
+User=john
+Group=john
+WorkingDirectory=/home/john/proxyproject/new_test/scaner
+ExecStart=/home/john/.v3/bin/python sock5.py
+LimitNOFILE=500000
+LimitNPROC=500000
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,230 @@
+import asyncio
+import aiosocks
+import aiohttp
+from async_timeout import timeout
+
+from datetime import datetime, timezone
+import time
+import json
+from contextlib import suppress
+from threading import Thread as thread
+import re
+import sys
+import os
+import argparse
+import pickle
+
+import zmq, zmq.asyncio
+
+ctx = zmq.asyncio.Context(io_threads=10)
+
+
+pattern = re.compile(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d{1,5}")
+TMP = '_s'
+
+
+
+def _exception_handler(loop, context):
+	# если раскоментироать поваляться ошибки
+    # связаные с самими соксами (не доступен/офлаин итд)
+    # в основном это служит для перехвата исключений в самом loop
+    # loop.default_exception_handler(context)
+
+    exception = context.get('exception')
+    if isinstance(exception, (asyncio.TimeoutError, ConnectionRefusedError, Exception)):
+    	pass
+
+
+
+class AsyncSock4:
+	def __init__(self, result, timeout, number, repeat, type_sock, out):
+		self.dst = ("185.235.245.17", 5566)
+		self.result = result
+		self.timeout = timeout
+		self.sem = asyncio.Semaphore(number)
+		self.lock = asyncio.Lock()
+		self.repeat = repeat
+		self._out = out
+		self._format_ipreal = "{}:{}\t{}"
+		self._format_ip_port = "{}:{}"
+		self.restore = asyncio.Queue()
+		#self._running = None
+		self.path = '../server.sock'
+		self._name = __file__
+		if type_sock == 5:
+			self._type = 'socks5'
+			self._sock = aiosocks.Socks5Addr
+		else:
+			self._type = 'socks4'
+			self._sock = aiosocks.Socks4Addr
+
+
+
+	async def sock(self, obj):
+		ip, port = obj
+		async with self.sem:
+			try:
+				socks_addr = self._sock(ip, int(port))
+				async with timeout(self.timeout):
+					reader, writer = await aiosocks.open_connection(
+						proxy=socks_addr, proxy_auth=None, dst=self.dst)
+					data = await reader.read(1024)
+					if data:
+						if self._out == "ipreal":
+							with await self.lock:
+								print(self._format_ipreal.format(ip, port, data.decode()), end='\n')
+						else:
+							with await self.lock:
+								print(self._format_ip_port.format(ip, port))
+				writer.close()
+			except Exception as exc:
+				if self.restore:
+					await self.restore.put(obj)
+
+
+	async def _resp_socks(self, url):
+		async with aiohttp.ClientSession() as session:
+			async with session.get(url) as resp:
+				data = await resp.text()
+				return data
+
+	
+	async def monitor_unix_client(self, msg):
+		reader, writer = await asyncio.open_unix_connection(self.path)
+		writer.write(msg)
+		writer.write_eof()
+		writer.close()
+
+
+	async def _bootstrap(self, loop):
+		now = time.time()
+		msg = dict(
+			scan_status="run",
+			scan_type=self._type,
+			scan_name=self._name,
+			scan_start=datetime.now().strftime('%H:%M:%S'),
+			scan_end="---",
+			scan_start_next="---"
+			)
+		obj = pickle.dumps(msg)
+		await self.monitor_unix_client(obj)
+		if not self.restore:
+			tasks = [loop.create_task(self.sock(obj)) for obj in self.result]
+			for task in asyncio.as_completed(tasks):
+				res = await task
+		else:
+			tasks = [loop.create_task(self.sock(obj)) for obj in self.result]
+			for task in asyncio.as_completed(tasks):
+				res = await task
+			for _ in range(self.repeat):
+				restore = []
+				for res in range(self.restore.qsize()):
+					restore.append(self.restore.get_nowait())
+				tasks = [loop.create_task(self.sock(obj)) for obj in restore]
+				for task in asyncio.as_completed(tasks):
+					res = await task
+		msg = dict(
+			scan_status="stop",
+			scan_type=self._type,
+			scan_name=self._name,
+			scan_start=datetime.now().strftime('%H:%M:%S'),
+			scan_end=int(time.time() - now) // 60,
+			scan_start_next=5
+			)
+		print(msg)
+		obj = pickle.dumps(msg)
+		await self.monitor_unix_client(obj)
+
+
+	def go(self):
+		#self._running = True
+		loop = asyncio.get_event_loop()
+		loop.set_exception_handler(_exception_handler)
+		#thr = thread(target=monitor, args=(self,))
+		#thr.start()
+		#loop.run_until_complete(self.monitor_unix_clien("Запустили"))
+		loop.run_until_complete(self._bootstrap(loop))
+
+
+#def monitor(self):
+	#loop = asyncio.new_event_loop()
+	#asyncio.set_event_loop(loop)
+#	ctx = zmq.Context(io_threads=10)
+#	def mon():
+#		sock = ctx.socket(zmq.PUB)
+#		sock.setsockopt(zmq.LINGER, 1)
+#		sock.connect('tcp://localhost:5555')
+		#with suppress(asyncio.CancelledError):
+#		while True:
+#			sock.send_json(dict(
+#				#worker='127.0.0.1',
+#				scan_name=self._name,
+#				scan_type=self._type,
+#				scan_status=self._running,
+#				scan_start=datetime.now(tz=timezone.utc).isoformat(),
+#				))
+#			time.sleep(10)
+#			if not self._running:
+#				break
+#		sock.close()
+#	mon()
+
+
+def main(result, timeout, number, repeat, type_sock, out):
+	checker = AsyncSock4(result, timeout, number, repeat, type_sock, out)
+	checker.go()
+
+
+def do_scan(name, types, path='.'):
+	result = []
+	with open(name, "rt") as f:
+		if types == 'masscan':
+			for obj in f:
+				try:
+					_, _, port, ip, _ = obj.split()
+					result.append((ip, port))
+				except:
+					pass
+		elif types == 'list':
+			for obj in f:
+				try:
+					ip, port = pattern.findall(obj)[0].split(":")
+					result.append((ip, port))
+				except Exception as exc:
+					print(exc)
+	if not result:
+		raise ValueError("пустой результат")
+	return result
+
+
+def splitter(name, number):
+	os.system('split -l {number} {name}'.format(number=number, name=name))
+	res = [x for x in os.listdir() if not x.endswith(('.txt', '.py', '__pycache__'))]
+	return res
+
+
+
+if __name__ == '__main__':
+	parser = argparse.ArgumentParser()
+	parser.add_argument('-i', '--input',   type=str, help="имя файла и путь")
+	parser.add_argument('-f', '--format',  type=str, help='формат листов: masscan (masscan) или ip:port (list)')
+	parser.add_argument('-s', '--split',   type=int, help='разбивка листов на множество (1000000)', default=0)
+	parser.add_argument('-sock', '--type', type=int, help='тив скарирования socks4 или socks5', default=4)
+	parser.add_argument('-t', '--timeout', type=int, help='тай-аут скана')
+	parser.add_argument('-n', '--number',  type=int, help='Количество потоков', default=1000)
+	parser.add_argument('-r', '--repeat',  type=int, help='', default=0)
+	parser.add_argument('-o', '--out',     type=str, help='формат вывода, ip:port ("ip:port") или ip:port tab ipreal \
+		(ipreal)',default='ip:port')
+
+
+	args = parser.parse_args()
+	if args.split:
+		data = splitter(args.input, args.split)
+		for name in data:
+			result = do_scan(name, args.format)
+			main(result, args.timeout, args.number, args.repeat, args.type, args.out)
+	else:
+		result = do_scan(args.input, args.format)
+		main(result, args.timeout, args.number, args.repeat, args.type, args.out)
+	print("END")
+	ctx.term()
