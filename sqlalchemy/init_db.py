@@ -145,7 +145,8 @@ def do_create_tables(engine):
 
 
 def create_tables(engine):
-	metadata.create_all(bind=engine, tables=[bc, bc_auth, bc_ident, bc_1, bc_2, bc_ident_1, bc_ident_2])
+	metadata.create_all(
+		bind=engine, tables=[bc, bc_auth, bc_ident, bc_1, bc_2, bc_ident_1, bc_ident_2])
 
 
 

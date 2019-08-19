@@ -64,9 +64,6 @@ ONLINE_SQL = sql_start_()
 def timer():
 	logging.info("стработал таймер")
 	global ONLINE_SQL
-	#now = datetime.datetime.utcnow()
-	#now = now.replace(tzinfo=pytz.utc)
-	#delta = now - datetime.timedelta(hours=1)
 	
 	now = datetime.datetime.now(pytz.utc)
 	delta = now - datetime.timedelta(hours=1)

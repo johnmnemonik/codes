@@ -47,16 +47,13 @@ sql5_write_isp = """
 	"""
 
 
-#sql5_online_true = "UPDATE proxy_proxy \
-#			   SET checkers=$1::bool, update=now() \
-#			   WHERE ip=$2 AND port=$3"
+
 
 sql5_online_true = "UPDATE proxy_proxy \
 			   SET checkers=$1::bool, update=now() \
 			   WHERE ip=$2 AND port=$3 AND id=$4"
 
-#sql5_online_false = "UPDATE proxy_proxy \
-#			   SET checkers=$1::bool WHERE ip=$2 AND port=$3"
+
 
 sql5_online_false = "UPDATE proxy_proxy \
 			   SET checkers=$1::bool WHERE ip=$2 AND port=$3 AND id=$4"
@@ -149,21 +146,6 @@ sql4_write_bp_isp_new = """
 		WHERE ip=$17 AND port=$18 AND id=$19;  
 		"""
 
-#sql4_write_bp = """
-#		INSERT INTO proxy_proxy (
-#			worker_id, vendor_id, ip, port, ipreal,
-#			timeout, country, city, continent, country_code, 
-#			lat, lon, postal_code, region_code, time_zone,
-#			gmt, time_region, domain, region, typeproxy, 
-#			tp, anonymity, checkers, created, update, auth, scan)
-#		VALUES (
-#				$1,$2,$3,$4,$5,
-#				$6::float,$7,$8,$9,$10,
-#				$11::float,$12::float,$13,$14,$15,
-#				$16::float,$17,$18,$19,$20,
-#				$21,$22,$23::bool, now(), now(), $24,$25)
-#		ON CONFLICT (ipreal, vendor_id) DO NOTHING;
-#	"""
 
 
 sql4_online_bp_true = "UPDATE proxy_proxy \

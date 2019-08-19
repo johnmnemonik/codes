@@ -132,7 +132,6 @@ class AsyncSock4Online:
 			res = await task
 			if res[0]:
 				await self._queue_true.put(res)
-				#await self._write_db(self.sql_true, *res)
 			else:
 				restore.append((res[2], res[3], res[4]))
 			
@@ -144,10 +143,8 @@ class AsyncSock4Online:
 			res = await task
 			if res[0]:
 				await self._queue_true.put(res)
-				#await self._write_db(self.sql_true, *res)
 			else:
 				await self._queue_false.put(res)
-				#await self._write_db(self.sql_false, *res)
 
 		logging.info("запись")
 		writer_true = []

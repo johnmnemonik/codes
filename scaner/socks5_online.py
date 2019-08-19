@@ -26,14 +26,6 @@ logging.basicConfig(
 	level=logging.INFO
 )
 
-#now = datetime.datetime.now()
-#delta =  now - datetime.timedelta(hours=24)
-
-#SQL = """
-#	SELECT p.ip, p.port, p.id FROM proxy_proxy as p, proxy_worker as w 
-#	WHERE p.worker_id=w.id AND w.ip='%s'
-#	AND p.tp='socks5' AND p.scan=False AND p.typeproxy='dp'
-#	AND p.update > TIMESTAMP '%s';""" % (IP, delta)
 
 
 
@@ -168,11 +160,8 @@ class AsyncSock5Online:
 			
 			if res[0]:
 				await self._queue_true.put(res)
-				#await self._write_db(self.sql_true, *res)
 			else:
 				restore.append((res[1], res[2], res[3]))
-				#await self._queue_false.put(res)
-				#await self._write_db(self.sql_false, *res)
 			
 		logging.info("ПОВТОР")
 		logging.info("на повтор отправлено %s соксов", len(restore))
@@ -183,10 +172,8 @@ class AsyncSock5Online:
 		
 			if res[0]:
 				await self._queue_true.put(res)
-				#await self._write_db(self.sql_true, *res)
 			else:
 				await self._queue_false.put(res)
-				#await self._write_db(self.sql_false, *res)
 		logging.info("запись")
 		writer_true = []
 		writer_false = []
