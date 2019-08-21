@@ -26,7 +26,8 @@ async def handle_auth(request):
 	async with pool.acquire() as connection:
 		async with connection.transaction():
 			result = await connection.fetch(sql_auth)
-			res = " ".join(["{}:{}\t {}\n".format(x['loc_ip'],x['loc_port'],x['ipreal']) for x in result])
+			res = " ".join(["{}:{}\t {}\n".format(
+				x['loc_ip'],x['loc_port'],x['ipreal']) for x in result])
 			return web.Response(text=res)
 
 
@@ -36,7 +37,8 @@ async def handle(request):
 	async with pool.acquire() as connection:
 		async with connection.transaction():
 			result = await connection.fetch(sql)
-			res = " ".join(["{}:{}\t {}\n".format(x['loc_ip'],x['loc_port'],x['ipreal']) for x in result])
+			res = " ".join(["{}:{}\t {}\n".format(
+				x['loc_ip'],x['loc_port'],x['ipreal']) for x in result])
 			return web.Response(text=res)
 
 
@@ -46,7 +48,8 @@ async def handle_bc_1(request):
 	async with pool.acquire() as connection:
 		async with connection.transaction():
 			result = await connection.fetch(sql_1)
-			res = " ".join(["{}:{}\t {}\n".format(x['loc_ip'],x['loc_port'],x['ipreal']) for x in result])
+			res = " ".join(["{}:{}\t {}\n".format(
+				x['loc_ip'],x['loc_port'],x['ipreal']) for x in result])
 			return web.Response(text=res)
 
 #@cache(expires=60*3)
@@ -55,7 +58,8 @@ async def handle_bc_2(request):
 	async with pool.acquire() as connection:
 		async with connection.transaction():
 			result = await connection.fetch(sql_2)
-			res = " ".join(["{}:{}\t {}\n".format(x['loc_ip'],x['loc_port'],x['ipreal']) for x in result])
+			res = " ".join(["{}:{}\t {}\n".format(
+				x['loc_ip'],x['loc_port'],x['ipreal']) for x in result])
 			return web.Response(text=res)
 
 
@@ -65,7 +69,8 @@ async def handle_bc_full(request):
 	async with pool.acquire() as connection:
 		async with connection.transaction():
 			result = await connection.fetch(sql_full)
-			res = " ".join(["{}:{}\t {}\t{}\n".format(x['loc_ip'],x['loc_port'],x['ipreal'],x['online']) for x in result])
+			res = " ".join(["{}:{}\t {}\t{}\n".format(
+				x['loc_ip'],x['loc_port'],x['ipreal'],x['online']) for x in result])
 			return web.Response(text=res)
 
 
@@ -75,7 +80,8 @@ async def handle_bc_two(request):
 	async with pool.acquire() as connection:
 		async with connection.transaction():
 			result = await connection.fetch(sql_full_two)
-			res = " ".join(["{}:{}\t {}\t{}\n".format(x['loc_ip'],x['loc_port'],x['ipreal'],x['online']) for x in result])
+			res = " ".join(["{}:{}\t {}\t{}\n".format(
+				x['loc_ip'],x['loc_port'],x['ipreal'],x['online']) for x in result])
 			return web.Response(text=res)
 
 
@@ -85,7 +91,8 @@ async def handle_ident(request):
 	async with pool.acquire() as connection:
 		async with connection.transaction():
 			result = await connection.fetch(sql_ident)
-			res = " ".join(["{}:{}\t {}\n".format(x['loc_ip'],x['loc_port'],x['ipreal']) for x in result])
+			res = " ".join(["{}:{}\t {}\n".format(
+				x['loc_ip'],x['loc_port'],x['ipreal']) for x in result])
 			return web.Response(text=res)
 
 #@cache(expires=60*3)
@@ -94,7 +101,8 @@ async def handle_ident_1(request):
 	async with pool.acquire() as connection:
 		async with connection.transaction():
 			result = await connection.fetch(sql_ident_1)
-			res = " ".join(["{}:{}\t {}\n".format(x['loc_ip'],x['loc_port'],x['ipreal']) for x in result])
+			res = " ".join(["{}:{}\t {}\n".format(
+				x['loc_ip'],x['loc_port'],x['ipreal']) for x in result])
 			return web.Response(text=res)
 
 
@@ -103,7 +111,8 @@ async def handle_ident_2(request):
 	async with pool.acquire() as connection:
 		async with connection.transaction():
 			result = await connection.fetch(sql_ident_2)
-			res = " ".join(["{}:{}\t {}\n".format(x['loc_ip'],x['loc_port'],x['ipreal']) for x in result])
+			res = " ".join(["{}:{}\t {}\n".format(
+				x['loc_ip'],x['loc_port'],x['ipreal']) for x in result])
 			return web.Response(text=res)
 
 

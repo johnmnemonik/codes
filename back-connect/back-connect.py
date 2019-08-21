@@ -494,7 +494,8 @@ class AsyncThreadDB(Thread):
 		# убираем сокс из листа (вывода)  
 		async with self._pool.acquire() as con:
 			try:
-				await con.execute("UPDATE bc_1 SET online=$1 WHERE ip=$2 AND port=$3", status, ip, port)
+				await con.execute(
+					"UPDATE bc_1 SET online=$1 WHERE ip=$2 AND port=$3", status, ip, port)
 			except ConnectionDoesNotExistError as exc:
 				self.log.exception(exc)
 			except TooManyConnectionsError as exc:

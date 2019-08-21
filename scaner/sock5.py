@@ -164,8 +164,7 @@ class AsyncSock5Geo:
 						content = await fut
 						await self._write_db(content)
 						writer.close()
-			except (ConnectionError, ConnectionResetError, ConnectionRefusedError, \
-					asyncio.TimeoutError, OSError, ConnectionResetError):
+			except Exception:
 				anonymity, checkers, ipreal = 'no', False, ip
 				fut = self._loop.run_in_executor(
 					None, parser, ip, port, ipreal,

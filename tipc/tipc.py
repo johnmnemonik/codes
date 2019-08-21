@@ -41,7 +41,6 @@ TIPC_STYPE_M = 3000
 def server2():
 	srv = socket.socket(socket.AF_TIPC, socket.SOCK_STREAM)
 	srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	#srvaddr = (socket.TIPC_ADDR_NAMESEQ, TIPC_STYPE, 200, 210)
 	srvaddr = (socket.TIPC_ADDR_NAME, TIPC_STYPE, 555, 0)
 	srv.bind(srvaddr)
 	srv.listen(5)

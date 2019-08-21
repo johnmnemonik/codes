@@ -80,17 +80,17 @@ async def stop_collector(app):
 	ctx.term()
 
 
-async def go():
-	app = web.Application()
-	aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates/'))
-	app.router.add_route('GET', '/detail/{ip}', load_server)
-	app.router.add_route('GET', '/', load_server)
-	app.router.add_route('GET', '/smoothie-js', smoothie)
-	app.router.add_route('GET', '/detail/smoothie-js', smoothie)
-	app.router.add_route('GET', '/feed', feed)
-	app.on_startup.append(start_collector)
-	app.on_cleanup.append(stop_collector)
-	return app
+#async def go():
+#	app = web.Application()
+#	aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates/'))
+#	app.router.add_route('GET', '/detail/{ip}', load_server)
+#	app.router.add_route('GET', '/', load_server)
+#	app.router.add_route('GET', '/smoothie-js', smoothie)
+#	app.router.add_route('GET', '/detail/smoothie-js', smoothie)
+#	app.router.add_route('GET', '/feed', feed)
+#	app.on_startup.append(start_collector)
+#	app.on_cleanup.append(stop_collector)
+#	return app
 
 
 

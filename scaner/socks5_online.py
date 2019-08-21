@@ -98,8 +98,7 @@ class AsyncSock5Online:
 					else:
 						writer.close()
 						return (False, ip, port, id)
-			except (ConnectionError, ConnectionResetError, ConnectionRefusedError, \
-					asyncio.TimeoutError, OSError, ConnectionResetError, Exception):
+			except Exception:
 			    return (False, ip, port, id)
 
 	

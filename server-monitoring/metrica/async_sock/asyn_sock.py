@@ -22,7 +22,6 @@ ctx = zmq.asyncio.Context(io_threads=10)
 
 
 pattern = re.compile(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:\d{1,5}")
-TMP = '_s'
 ADDRESS = ("127.0.0.1", 5566)
 
 

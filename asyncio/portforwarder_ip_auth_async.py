@@ -1,5 +1,3 @@
-# encoding: utf-8
-#!/usr/bin/env python
 import sys
 import os
 import time
